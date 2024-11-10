@@ -59,7 +59,7 @@ func (repository MySQL) GetAll() ([]users.User, error) {
 	return usersList, nil
 }
 
-func (repository MySQL) GetByID(id int64) (users.User, error) {
+func (repository MySQL) GetUserByID(id int64) (users.User, error) {
 	var user users.User
 	if err := repository.db.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -70,34 +70,21 @@ func (repository MySQL) GetByID(id int64) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) GetByUsername(username string) (users.User, error) {
+func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	var user users.User
-	if err := repository.db.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := repository.db.Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+
 			return user, fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error fetching user by username: %w", err)
+		return user, fmt.Errorf("error fetching user by email: %w", err)
 	}
 	return user, nil
 }
 
-func (repository MySQL) Create(user users.User) (int64, error) {
+func (repository MySQL) CreateUser(user users.User) (int64, error) {
 	if err := repository.db.Create(&user).Error; err != nil {
 		return 0, fmt.Errorf("error creating user: %w", err)
 	}
 	return user.ID, nil
-}
-
-func (repository MySQL) Update(user users.User) error {
-	if err := repository.db.Save(&user).Error; err != nil {
-		return fmt.Errorf("error updating user: %w", err)
-	}
-	return nil
-}
-
-func (repository MySQL) Delete(id int64) error {
-	if err := repository.db.Delete(&users.User{}, id).Error; err != nil {
-		return fmt.Errorf("error deleting user: %w", err)
-	}
-	return nil
 }
