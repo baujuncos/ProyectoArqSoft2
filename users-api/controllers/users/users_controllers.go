@@ -13,6 +13,7 @@ type Service interface { //definimos conjunto de metodos de users que tendran im
 	CreateUser(user dto.UserDto) (int64, error)
 	Login(mail string, password string) (dto.LoginDtoResponse, error)
 }
+
 type Controller struct {
 	service Service //delegamos responsabilidad de lógica de negocio al Service
 }
@@ -23,7 +24,8 @@ func NewController(service Service) Controller { //creamos una instancia del con
 	}
 }
 
-// El controlador está construido para manejar diferentes tipos de solicitudes HTTP relacionadas con usuarios:
+//El controlador está construido para manejar diferentes tipos de solicitudes HTTP relacionadas con usuarios:
+
 func (controller Controller) GetUsersByID(c *gin.Context) {
 	userID := c.Param("id")                     //Extraemos el ID de la URL
 	id, err := strconv.ParseInt(userID, 10, 64) //convertimos ID a tipo entero
@@ -33,6 +35,7 @@ func (controller Controller) GetUsersByID(c *gin.Context) {
 		})
 		return
 	}
+
 	// Invoke service
 	user, err := controller.service.GetUserByID(id) // llamamos al servicio correspondiente
 	if err != nil {
@@ -41,6 +44,7 @@ func (controller Controller) GetUsersByID(c *gin.Context) {
 		})
 		return
 	}
+
 	// Send user
 	c.JSON(http.StatusOK, user) //si encuentra al usuario devolvemos 200 y el usuario
 }
@@ -53,14 +57,15 @@ func (controller Controller) Create(c *gin.Context) {
 		})
 		return
 	}
-	// Invoke service
-	id, err := controller.service.Create(user) //llamamos al servicio que crea el usuario
-	if err != nil {
+
+	id, err := controller.service.CreateUser(user)
+	if err != nil { //llamamos al servicio que crea el usuario
 		c.JSON(http.StatusInternalServerError, gin.H{ //si hay error devuelve 500
 			"error": fmt.Sprintf("error creating user: %s", err.Error()),
 		})
 		return
 	}
+
 	// Send ID
 	c.JSON(http.StatusCreated, gin.H{ //exito en registro devuelve 201 Created
 		"id": id,
@@ -75,6 +80,7 @@ func (controller Controller) Login(c *gin.Context) {
 		})
 		return
 	}
+
 	response, err := controller.service.Login(user.Email, user.Password) //llamamos al servicio para autenticar el usuario
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{ //en caso de credenciales incorrectas devuelve 401 Unauthorized
@@ -82,5 +88,6 @@ func (controller Controller) Login(c *gin.Context) {
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, response) //en login exitoso devolvemos 200 y el token
 }
