@@ -14,11 +14,11 @@ func main() {
 	// MySQL
 	mySQLRepo := repositories.NewMySQL(
 		repositories.MySQLConfig{
-			Host:     "mysql",
+			Host:     "localhost",
 			Port:     "3306",
-			Database: "users-api",
+			Database: "users_api",
 			Username: "root",
-			Password: "root",
+			Password: "belusql1",
 		},
 	)
 
@@ -51,10 +51,8 @@ func main() {
 	router := gin.Default()
 
 	// URL mappings
-	router.GET("/users", controller.GetAll)
-	router.GET("/users/:id", controller.GetByID)
+	router.GET("/users/:id", controller.GetUsersByID)
 	router.POST("/users", controller.Create)
-	router.PUT("/users/:id", controller.Update)
 	router.POST("/login", controller.Login)
 
 	// Run application
