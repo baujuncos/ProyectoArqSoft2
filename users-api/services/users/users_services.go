@@ -101,7 +101,7 @@ func (service Service) GetUserByEmail(email string) (dto.UserDto, error) {
 }
 
 func (service Service) CreateUser(user dto.UserDto) (int64, error) {
-	// Hash the password
+	// Hasheo de la contraseña
 	passwordHash := Hash(user.Password)
 
 	newUser := dao.Users{
@@ -111,6 +111,8 @@ func (service Service) CreateUser(user dto.UserDto) (int64, error) {
 		Apellido: user.Apellido,
 		Admin:    user.Admin,
 	}
+
+	fmt.Printf("Mapped user: %+v\n", newUser) // Depuración
 
 	// Create in main repository
 	id, err := service.mainRepository.CreateUser(newUser)
