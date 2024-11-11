@@ -2,6 +2,7 @@ package tokenizers
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 import _ "github.com/go-sql-driver/mysql"
