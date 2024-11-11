@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"users-api/dao/users"
+	dao "users-api/dao"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ type MySQL struct {
 
 var (
 	migrate = []interface{}{
-		users.User{},
+		dao.Users{},
 	}
 )
 
@@ -51,16 +51,16 @@ func NewMySQL(config MySQLConfig) MySQL {
 	}
 }
 
-func (repository MySQL) GetAll() ([]users.User, error) {
-	var usersList []users.User
+func (repository MySQL) GetAll() ([]dao.Users, error) {
+	var usersList []dao.Users
 	if err := repository.db.Find(&usersList).Error; err != nil {
 		return nil, fmt.Errorf("error fetching all users: %w", err)
 	}
 	return usersList, nil
 }
 
-func (repository MySQL) GetUserByID(id int64) (users.User, error) {
-	var user users.User
+func (repository MySQL) GetUserByID(id int64) (dao.Users, error) {
+	var user dao.Users
 	if err := repository.db.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, fmt.Errorf("user not found")
@@ -70,8 +70,8 @@ func (repository MySQL) GetUserByID(id int64) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
-	var user users.User
+func (repository MySQL) GetUserByEmail(email string) (dao.Users, error) {
+	var user dao.Users
 	if err := repository.db.Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 
@@ -82,9 +82,9 @@ func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) CreateUser(user users.User) (int64, error) {
+func (repository MySQL) CreateUser(user dao.Users) (int64, error) {
 	if err := repository.db.Create(&user).Error; err != nil {
 		return 0, fmt.Errorf("error creating user: %w", err)
 	}
-	return user.ID, nil
+	return user.User_id, nil
 }
