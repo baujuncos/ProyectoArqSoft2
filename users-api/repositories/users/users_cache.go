@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/karlseguin/ccache"
 	"time"
+	dao "users-api/dao"
 )
 
 type CacheConfig struct {
@@ -24,13 +25,7 @@ func NewCache(config CacheConfig) Cache {
 	}
 }
 
-func (repository Cache) GetAll() ([]users.User, error) {
-	// Since it's not typical to cache all users in one request, you might skip caching here
-	// Alternatively, you can cache a summary list if needed
-	return nil, fmt.Errorf("GetAll not implemented in cache")
-}
-
-func (repository Cache) GetUserByID(id int64) (users.User, error) {
+func (repository Cache) GetUserByID(id int64) (dao.Users, error) {
 	// Convert ID to string for cache key
 	idKey := fmt.Sprintf("user:id:%d", id)
 
@@ -38,36 +33,36 @@ func (repository Cache) GetUserByID(id int64) (users.User, error) {
 	item := repository.client.Get(idKey)
 	if item != nil && !item.Expired() {
 		// Return cached value
-		user, ok := item.Value().(users.User)
+		user, ok := item.Value().(dao.Users)
 		if !ok {
-			return users.User{}, fmt.Errorf("failed to cast cached value to user")
+			return dao.Users{}, fmt.Errorf("failed to cast cached value to user")
 		}
 		return user, nil
 	}
 
 	// If not found, return cache miss error
-	return users.User{}, fmt.Errorf("cache miss for user ID %d", id)
+	return dao.Users{}, fmt.Errorf("cache miss for user ID %d", id)
 }
 
-func (repository Cache) GetUserByEmail(email string) (users.User, error) {
+func (repository Cache) GetUserByEmail(email string) (dao.Users, error) {
 	userKey := fmt.Sprintf("user:email:%s", email)
 
 	// Try to get from cache
 	item := repository.client.Get(userKey)
 	if item != nil && !item.Expired() {
 		// Return cached value
-		user, ok := item.Value().(users.User)
+		user, ok := item.Value().(dao.Users)
 		if !ok {
-			return users.User{}, fmt.Errorf("failed to cast cached value to user")
+			return dao.Users{}, fmt.Errorf("failed to cast cached value to user")
 		}
 		return user, nil
 	}
 
 	// If not found, return cache miss error
-	return users.User{}, fmt.Errorf("cache miss for email %s", email)
+	return dao.Users{}, fmt.Errorf("cache miss for email %s", email)
 }
 
-func (repository Cache) CreateUser(user users.User) (int64, error) {
+func (repository Cache) CreateUser(user dao.Users) (int64, error) {
 	// Cache user by ID and by username after creation
 	idKey := fmt.Sprintf("user:id:%d", user.User_id)
 	userKey := fmt.Sprintf("user:email:%s", user.Email)
