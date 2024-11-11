@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bradfitz/gomemcache/memcache"
+	dao "users-api/dao"
 )
 
 type MemcachedConfig struct {
@@ -32,52 +33,46 @@ func NewMemcached(config MemcachedConfig) Memcached {
 	return Memcached{client: client}
 }
 
-func (repository Memcached) GetAll() ([]users.User, error) {
-	// In Memcached, you typically don’t have a way to retrieve "all" keys
-	// You might need to store the list of all IDs in a separate cache entry
-	return nil, fmt.Errorf("GetAll not supported in Memcached")
-}
-
-func (repository Memcached) GetUserByID(id int64) (users.User, error) {
+func (repository Memcached) GetUserByID(id int64) (dao.Users, error) {
 	// Retrieve the user from Memcached
 	key := idKey(id)
 	item, err := repository.client.Get(key)
 	if err != nil {
 		if errors.Is(err, memcache.ErrCacheMiss) {
-			return users.User{}, fmt.Errorf("user not found")
+			return dao.Users{}, fmt.Errorf("user not found")
 		}
-		return users.User{}, fmt.Errorf("error fetching user from memcached: %w", err)
+		return dao.Users{}, fmt.Errorf("error fetching user from memcached: %w", err)
 	}
 
 	// Deserialize the data
-	var user users.User
+	var user dao.Users
 	if err := json.Unmarshal(item.Value, &user); err != nil {
-		return users.User{}, fmt.Errorf("error unmarshaling user: %w", err)
+		return dao.Users{}, fmt.Errorf("error unmarshaling user: %w", err)
 	}
 	return user, nil
 }
 
-func (repository Memcached) GetUserByEmail(email string) (users.User, error) {
+func (repository Memcached) GetUserByEmail(email string) (dao.Users, error) {
 	// Assume we store users with "email:<email>" as key
 	key := emailKey(email)
 	item, err := repository.client.Get(key)
 	if err != nil {
 		if errors.Is(err, memcache.ErrCacheMiss) {
-			return users.User{}, fmt.Errorf("user not found")
+			return dao.Users{}, fmt.Errorf("user not found")
 		}
-		return users.User{}, fmt.Errorf("error fetching user by email from memcached: %w", err)
+		return dao.Users{}, fmt.Errorf("error fetching user by email from memcached: %w", err)
 	}
 
 	// Deserialize the data
-	var user users.User
+	var user dao.Users
 	if err := json.Unmarshal(item.Value, &user); err != nil {
-		return users.User{}, fmt.Errorf("error unmarshaling user: %w", err)
+		return dao.Users{}, fmt.Errorf("error unmarshaling user: %w", err)
 	}
 
 	return user, nil
 }
 
-func (repository Memcached) CreateUser(user users.User) (int64, error) {
+func (repository Memcached) CreateUser(user dao.Users) (int64, error) {
 	// Serialize user data
 	data, err := json.Marshal(user)
 	if err != nil {
