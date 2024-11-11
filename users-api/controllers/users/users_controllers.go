@@ -26,6 +26,41 @@ func NewController(service Service) Controller { //creamos una instancia del con
 
 //El controlador está construido para manejar diferentes tipos de solicitudes HTTP relacionadas con usuarios:
 
+func (controller Controller) CreateUser(c *gin.Context) {
+	var user dto.UserDto
+	err := c.BindJSON(&user)
+	if err != nil {
+
+		c.JSON(http.StatusBadGateway, gin.H{ //si el json no es valido devuelve 502
+			"error": fmt.Sprintf("Error al parsear el JSON: %s", err.Error()),
+		})
+		return
+	}
+
+	//Validaciones explicitas
+	if user.Email == "" || user.Nombre == "" || user.Apellido == "" {
+		fmt.Printf("Received JSON: %v\n", c.Request.Body)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "email, nombre, and apellido are required and cannot be empty",
+		})
+		return
+	}
+
+	id, err := controller.service.CreateUser(user) //llamamos al servicio que crea el usuario
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{ //si hay error devuelve 500
+			"error": fmt.Sprintf("error creating user: %s", err.Error()),
+		})
+		return
+	}
+
+	// Devolvemos ID del nuevo usuario
+	c.JSON(http.StatusCreated, gin.H{ //exito en registro devuelve 201 Created
+		"id": id,
+	})
+}
+
 func (controller Controller) GetUsersByID(c *gin.Context) {
 	userID := c.Param("id")                     //Extraemos el ID de la URL
 	id, err := strconv.ParseInt(userID, 10, 64) //convertimos ID a tipo entero
@@ -36,7 +71,6 @@ func (controller Controller) GetUsersByID(c *gin.Context) {
 		return
 	}
 
-	// Invoke service
 	user, err := controller.service.GetUserByID(id) // llamamos al servicio correspondiente
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{ //en caso de no encontrar el usuario devolvemos 404 not found
@@ -47,29 +81,6 @@ func (controller Controller) GetUsersByID(c *gin.Context) {
 
 	// Send user
 	c.JSON(http.StatusOK, user) //si encuentra al usuario devolvemos 200 y el usuario
-}
-
-func (controller Controller) Create(c *gin.Context) {
-	var user dto.UserDto
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{ //si el json no es valido devuelve 502
-			"error": fmt.Sprintf("invalid request: %s", err.Error()),
-		})
-		return
-	}
-
-	id, err := controller.service.CreateUser(user)
-	if err != nil { //llamamos al servicio que crea el usuario
-		c.JSON(http.StatusInternalServerError, gin.H{ //si hay error devuelve 500
-			"error": fmt.Sprintf("error creating user: %s", err.Error()),
-		})
-		return
-	}
-
-	// Send ID
-	c.JSON(http.StatusCreated, gin.H{ //exito en registro devuelve 201 Created
-		"id": id,
-	})
 }
 
 func (controller Controller) Login(c *gin.Context) {
