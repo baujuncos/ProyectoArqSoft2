@@ -1,6 +1,9 @@
 package users
 
 import (
+	"crypto/md5"
+	"database/sql"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
@@ -9,6 +12,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+import _ "github.com/go-sql-driver/mysql"
 
 type MySQLConfig struct {
 	Host     string
@@ -22,11 +27,7 @@ type MySQL struct {
 	db *gorm.DB
 }
 
-var (
-	migrate = []interface{}{
-		dao.Users{},
-	}
-)
+var sqlDB *sql.DB
 
 func NewMySQL(config MySQLConfig) MySQL {
 	// Build DSN (Data Source Name)
@@ -39,24 +40,52 @@ func NewMySQL(config MySQLConfig) MySQL {
 		log.Fatalf("failed to connect to MySQL: %s", err.Error())
 	}
 
-	// Automigrate structs to Gorm
-	for _, target := range migrate {
-		if err := db.AutoMigrate(target); err != nil {
-			log.Fatalf("error automigrating structs: %s", err.Error())
-		}
+	// Obtener la conexión SQL nativa de gorm
+	sqlDB, err = db.DB()
+	if err != nil {
+		log.Fatal("failed to get sql.DB from gorm: ", err)
 	}
 
+	//Migramos
+
+	userTableExists := db.Migrator().HasTable(&dao.Users{})
+
+	if !userTableExists {
+		err := db.Migrator().CreateTable(&dao.Users{})
+		if err != nil {
+			log.Fatal("Failed to migrate User table: ", err)
+		}
+		// Sembrar datos iniciales
+		SeedDB(db)
+	}
+
+	return MySQL{db: db}
+}
+
+func SeedDB(db *gorm.DB) MySQL {
+	userss := []dao.Users{
+		{Email: "pauliortiz@example.com", Password: "contraseña1", Nombre: "paulina", Apellido: "ortiz", Admin: true},
+		{Email: "baujuncos@example.com", Password: "contraseña2", Nombre: "bautista", Apellido: "juncos", Admin: true},
+		{Email: "belutreachi2@example.com", Password: "contraseña3", Nombre: "belen", Apellido: "treachi", Admin: false},
+		{Email: "virchurodiguez@example.com", Password: "contraseña4", Nombre: "virginia", Apellido: "rodriguez", Admin: false},
+		{Email: "johndoe@example.com", Password: "contraseña5", Nombre: "John", Apellido: "Doe", Admin: false},
+		{Email: "alicesmith@example.com", Password: "contraseña6", Nombre: "Alice", Apellido: "Smith", Admin: true},
+		{Email: "bobjohnson@example.com", Password: "contraseña7", Nombre: "Bob", Apellido: "Johnson", Admin: false},
+		{Email: "janedoe@example.com", Password: "contraseña8", Nombre: "Jane", Apellido: "Doe", Admin: false},
+		{Email: "emilywilliams@example.com", Password: "contraseña9", Nombre: "Emily", Apellido: "Williams", Admin: true},
+	}
+
+	for i, users := range userss {
+		// Hashear la contraseña con MD5
+		hasher := md5.New()
+		hasher.Write([]byte(users.Password))
+		hashedPassword := hex.EncodeToString(hasher.Sum(nil))
+		userss[i].Password = hashedPassword
+		db.FirstOrCreate(&userss[i], dao.Users{Email: users.Email})
+	}
 	return MySQL{
 		db: db,
 	}
-}
-
-func (repository MySQL) GetAll() ([]dao.Users, error) {
-	var usersList []dao.Users
-	if err := repository.db.Find(&usersList).Error; err != nil {
-		return nil, fmt.Errorf("error fetching all users: %w", err)
-	}
-	return usersList, nil
 }
 
 func (repository MySQL) GetUserByID(id int64) (dao.Users, error) {
@@ -83,8 +112,12 @@ func (repository MySQL) GetUserByEmail(email string) (dao.Users, error) {
 }
 
 func (repository MySQL) CreateUser(user dao.Users) (int64, error) {
-	if err := repository.db.Create(&user).Error; err != nil {
-		return 0, fmt.Errorf("error creating user: %w", err)
+	// Usamos GORM para crear el registro
+	result := repository.db.Create(&user)
+	if result.Error != nil {
+		return 0, result.Error
 	}
+
+	// Retornamos el ID generado automáticamente
 	return user.User_id, nil
 }
