@@ -1,8 +1,8 @@
 package main
 
 import (
-	controllers "cursos-api/controllers"
 	queues "cursos-api/clients"
+	controllers "cursos-api/controllers"
 	repositories "cursos-api/repositories"
 	services "cursos-api/services"
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 func main() {
 	// Mongo
 	mainRepository := repositories.NewMongo(repositories.MongoConfig{
-		Host:       "localhost",
+		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
 		Password:   "44898366",
@@ -22,7 +22,7 @@ func main() {
 
 	// Rabbit
 	eventsQueue := queues.NewRabbit(queues.RabbitConfig{
-		Host:      "localhost",
+		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "root",
 		Password:  "root",
