@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"users-api/config"
-	controllers "users-api/controllers/users"
+	controllersUser "users-api/controllers/users"
 	"users-api/internal/tokenizers"
 	repositories "users-api/repositories/users"
 	services "users-api/services/users"
@@ -41,19 +41,28 @@ func main() {
 		},
 	)
 
-	// Services
-	service := services.NewService(mySQLRepo, cacheRepo, memcachedRepo, jwtTokenizer)
+	// Services de users
+	serviceUsers := services.NewService(mySQLRepo, cacheRepo, memcachedRepo, jwtTokenizer)
 
-	// Handlers
-	controller := controllers.NewController(service)
+	// Service de inscripciones
+	serviceInscripciones := services.NewServiceIns(mySQLRepo)
+
+	// Handlers de user e inscripciones
+	controllerUser := controllersUser.NewController(serviceUsers)
+
+	inscripcionesController := controllersUser.NewControllerIns(serviceInscripciones)
 
 	// Create router
 	router := gin.Default()
 
 	// URL mappings
-	router.GET("/users/:id", controller.GetUsersByID)
-	router.POST("/users", controller.CreateUser)
-	router.POST("/login", controller.Login)
+	router.GET("/users/:id", controllerUser.GetUsersByID)
+	router.POST("/users", controllerUser.CreateUser)
+	router.POST("/login", controllerUser.Login)
+
+	router.POST("/inscripciones", inscripcionesController.InsertInscripcion)
+	router.GET("/inscripciones/usuario/:user_id", inscripcionesController.GetInscripcionesByUserID)
+	router.GET("/inscripciones/curso/:course_id", inscripcionesController.GetInscripcionesByCursoID)
 
 	// Run application
 	if err := router.Run(":8080"); err != nil {

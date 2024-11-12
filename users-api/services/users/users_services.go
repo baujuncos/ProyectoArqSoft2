@@ -9,6 +9,7 @@ import (
 )
 
 type Repository interface {
+	//Metodos de users
 	GetUserByID(id int64) (dao.Users, error)
 	GetUserByEmail(email string) (dao.Users, error)
 	CreateUser(user dao.Users) (int64, error)
@@ -114,7 +115,7 @@ func (service Service) CreateUser(user dto.UserDto) (int64, error) {
 
 	fmt.Printf("Mapped user: %+v\n", newUser) // Depuración
 
-	// Create in main repository
+	// Creamos en main repository
 	id, err := service.mainRepository.CreateUser(newUser)
 	if err != nil {
 		return 0, fmt.Errorf("error creating user: %w", err)

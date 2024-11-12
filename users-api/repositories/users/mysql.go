@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 	dao "users-api/dao"
 
 	"gorm.io/driver/mysql"
@@ -50,11 +51,19 @@ func NewMySQL(config MySQLConfig) MySQL {
 
 	userTableExists := db.Migrator().HasTable(&dao.Users{})
 
-	if !userTableExists {
+	inscripcionesTableExists := db.Migrator().HasTable(&dao.Inscripciones{})
+
+	if !userTableExists && !inscripcionesTableExists {
 		err := db.Migrator().CreateTable(&dao.Users{})
 		if err != nil {
 			log.Fatal("Failed to migrate User table: ", err)
 		}
+
+		err = db.Migrator().CreateTable(&dao.Inscripciones{})
+		if err != nil {
+			log.Fatal("Failed to migrate Inscripcion table: ", err)
+		}
+
 		// Sembrar datos iniciales
 		SeedDB(db)
 	}
@@ -83,6 +92,17 @@ func SeedDB(db *gorm.DB) MySQL {
 		userss[i].Password = hashedPassword
 		db.FirstOrCreate(&userss[i], dao.Users{Email: users.Email})
 	}
+
+	inscripcioness := []dao.Inscripciones{
+		{IdUsuario: 3, IdCurso: "1", FechaInscripcion: time.Now()},
+		{IdUsuario: 5, IdCurso: "2", FechaInscripcion: time.Now()},
+		{IdUsuario: 6, IdCurso: "3", FechaInscripcion: time.Now()},
+	}
+
+	for _, inscripcion := range inscripcioness {
+		db.FirstOrCreate(&inscripcion, dao.Inscripciones{IdUsuario: inscripcion.IdUsuario, IdCurso: inscripcion.IdCurso})
+	}
+
 	return MySQL{
 		db: db,
 	}
@@ -120,4 +140,68 @@ func (repository MySQL) CreateUser(user dao.Users) (int64, error) {
 
 	// Retornamos el ID generado automáticamente
 	return user.User_id, nil
+}
+
+func (repository MySQL) InsertInscripcion(inscripcion dao.Inscripciones) (int64, error) {
+	if err := repository.db.Create(&inscripcion).Error; err != nil {
+		log.Printf("Error al guardar la inscripción: %v\n", err)
+		return 0, fmt.Errorf("error al guardar la inscripción: %w", err)
+	}
+
+	return inscripcion.IdInscripcion, nil
+
+}
+
+func (repository MySQL) IsSubscribed(userID int64, cursoID string) (bool, error) {
+	var count int64
+	result := repository.db.Model(&dao.Inscripciones{}). //con model nos aseguramos de buscar en tabla inscripciones
+								Where("id_usuario = ? AND id_curso = ?", userID, cursoID). //filtramos donde coincidan los parametros dados
+								Count(&count)                                              //contamos coincidencias
+
+	if result.Error != nil {
+		return false, result.Error
+	}
+	if count > 0 {
+		return true, nil
+	} //retornamos true en caso de coincidencia y false en caso de no...
+	return false, nil
+}
+
+func (repository MySQL) GetInscripcionesByUserID(idUsuario int64) ([]string, error) {
+	var inscripciones []dao.Inscripciones
+	var cursos []string
+
+	// Buscar inscripciones por el ID del usuario
+	if err := repository.db.Where("id_usuario = ?", idUsuario).Find(&inscripciones).Error; err != nil {
+		return nil, fmt.Errorf("error fetching inscripciones by user ID: %w", err)
+	}
+
+	// Extraer los IDs de los cursos de las inscripciones encontradas
+	for _, inscripcion := range inscripciones {
+		cursos = append(cursos, inscripcion.IdCurso)
+	}
+
+	return cursos, nil
+}
+
+func (repository MySQL) GetInscripcionesByCursoID(idCurso string) ([]int64, error) {
+	var inscripciones []dao.Inscripciones
+	var usuarios []int64
+
+	// Buscar inscripciones por el ID del curso
+	if err := repository.db.Where("id_curso = ?", idCurso).Find(&inscripciones).Error; err != nil {
+		return nil, fmt.Errorf("error fetching inscripciones by course ID: %w", err)
+	}
+
+	// Si no se encontraron inscripciones, devolver un error personalizado
+	/*if len(inscripciones) == 0 {
+		return nil, fmt.Errorf("no se encontraron inscripciones para el curso con ID %s", idCurso)
+	}*/
+
+	// Extraer los IDs de los usuarios de las inscripciones encontradas
+	for _, inscripcion := range inscripciones {
+		usuarios = append(usuarios, inscripcion.IdUsuario)
+	}
+
+	return usuarios, nil
 }
