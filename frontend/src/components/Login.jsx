@@ -53,18 +53,18 @@ const Login = ({ onClose }) => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({email, password}),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Respuesta del servidor:', data);
+                    if(data.user_id){
+                        Cookies.set('user_id', data.user_id, { expires: 1, path: '/' });
+                        Cookies.set('email', email, { expires: 1, path: '/' });
+                        Cookies.set('token', data.token, { expires: 1, path: '/' });
+                        Cookies.set('admin', data.admin ? "1" : "0", { expires: 1, path: '/' });
 
-                    if (data.id_user) {
-                        Cookies.set('user_id', data.user_id);
-                        Cookies.set('email', email);
-                        Cookies.set('token', data.token);
-                        Cookies.set('admin', data.admin ? "1" : "0");
                         window.location.reload();
                     }
                 } else {

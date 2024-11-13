@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 	queues "search-api/clients"
 	controllers "search-api/controllers"
 	repositories "search-api/repositories"
 	services "search-api/services"
+	"time"
 )
 
 func main() {
@@ -43,8 +45,18 @@ func main() {
 		log.Fatalf("Error running consumer: %v", err)
 	}
 
-	// Create router
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// Create router
 	router.GET("/search", controller.Search)
 	if err := router.Run(":8082"); err != nil {
 		log.Fatalf("Error running application: %v", err)

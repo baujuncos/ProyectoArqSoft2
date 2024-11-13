@@ -10,6 +10,7 @@ import '../estilos/Course.css';
 import PopupValorar from "./PopUpValorar.jsx"
 import PopupSubirArchivo from "./PopUpArchivo.jsx";
 import PopupSeeReview from "./PopUpSeeReview.jsx";
+import PopupDetail from "./PopupDetail.jsx";
 
 const Item = ({ course, bandera }) => {
     const [userId, setUserId] = useState(null);
@@ -19,6 +20,8 @@ const Item = ({ course, bandera }) => {
     const { isOpen: isPopupOpenValorar, onOpen: onOpenPopupValorar, onClose: onClosePopupValorar } = useDisclosure();
     const { isOpen: isPopupOpenSubirArchivo, onOpen: onOpenPopupSubirArchivo, onClose: onClosePopupSubirArchivo } = useDisclosure();
     const { isOpen: isPopupOpenSeeReview , onOpen: onOpenPopupSeeReview , onClose: onClosePopupSeeReview } = useDisclosure();
+    const { isOpen: isPopupOpenDetail, onOpen: onOpenPopupDetail, onClose: onClosePopupDetail } = useDisclosure();
+
 
     const formattedDate = new Date(course.fecha_inicio).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -100,15 +103,11 @@ const Item = ({ course, bandera }) => {
                     <h1 style={{ fontFamily: 'Spoof Trial, sans-serif', fontWeight: 800, fontSize: 30 }}>{course.nombre}</h1>
 
                     <Text py='2' className="card-text">{course.descripcion}</Text>
-                    <Text py='2' className="card-text">{course.categoria}</Text>
                     <Text marginBottom='3px' display='flex' py='2' alignItems='center' className="card-text">
                         <img src="/estrella.png" alt="estrella" width="20px" height="20px" style={{ marginRight: '5px' }} />
                         {course.valoracion}/5
                     </Text>
-                    <Text className="card-textt">Duracion: {course.duracion}hs</Text>
-                    <Text className="card-textt">Fecha de inicio: {formattedDate}</Text>
-                    <Text className="card-textt">Requisito: Nivel {course.requisitos}</Text>
-                    <Text className="card-textt">Profesor: {getProfesorName(course.profesor_id)}</Text>
+                    <Button onClick={onOpenPopupDetail}>Ver detalle</Button>
                 </CardBody>
                 <CardFooter>
                     {userId && (
@@ -144,6 +143,8 @@ const Item = ({ course, bandera }) => {
             <PopupValorar isOpen={isPopupOpenValorar} onClose={onClosePopupValorar} courseId={course.course_id} />
             <PopupSubirArchivo isOpen={isPopupOpenSubirArchivo} onClose={onClosePopupSubirArchivo} courseId={course.course_id} />
             <PopupSeeReview isOpen={isPopupOpenSeeReview} onClose={onClosePopupSeeReview} courseId={course.course_id} />
+            <PopupDetail isOpen={isPopupOpenDetail} onClose={onClosePopupDetail} course={course} formattedDate={formattedDate} getProfesorName={getProfesorName} />
+
         </Card>
     );
 };

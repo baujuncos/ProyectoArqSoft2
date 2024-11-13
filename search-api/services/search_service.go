@@ -146,10 +146,10 @@ func (repo *SolrRepository) Index(ctx context.Context, curso coursesDTO.CourseDt
 	return curso.Course_id, nil
 }
 
-// Update modifica un documento de curso existente en la colección de Solr
+// Update sobrescribe un documento existente en Solr
 func (repo *SolrRepository) Update(ctx context.Context, curso coursesDTO.CourseDto) error {
 	doc := map[string]interface{}{
-		"course_id":    curso.Course_id,
+		"course_id":    curso.Course_id, // Este debe ser el uniqueKey
 		"nombre":       curso.Nombre,
 		"profesor_id":  curso.Profesor_id,
 		"categoria":    curso.Categoria,
@@ -162,23 +162,25 @@ func (repo *SolrRepository) Update(ctx context.Context, curso coursesDTO.CourseD
 	}
 
 	updateRequest := map[string]interface{}{
-		"add": []interface{}{doc},
+		"add": []interface{}{
+			map[string]interface{}{
+				"doc":       doc,
+				"overwrite": true, // Indica a Solr que sobrescriba documentos con la misma clave
+			},
+		},
 	}
 
-	// Marshal the update request to JSON
 	body, err := json.Marshal(updateRequest)
 	if err != nil {
 		return fmt.Errorf("error marshaling course document: %w", err)
 	}
 
-	// Create a new HTTP request with the body
 	req, err := http.NewRequestWithContext(ctx, "POST", repo.solrURL, bytes.NewBuffer(body))
 	if err != nil {
 		return fmt.Errorf("error creating HTTP request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	// Execute the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -186,7 +188,6 @@ func (repo *SolrRepository) Update(ctx context.Context, curso coursesDTO.CourseD
 	}
 	defer resp.Body.Close()
 
-	// Check the response status
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to update course in Solr, status code: %d", resp.StatusCode)
 	}

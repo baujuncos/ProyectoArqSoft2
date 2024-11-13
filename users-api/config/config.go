@@ -5,13 +5,13 @@ import "time"
 const (
 	MySQLHost     = "mysql"
 	MySQLPort     = "3306"
-	MySQLDatabase = "users-api"
+	MySQLDatabase = "users_api"
 	MySQLUsername = "root"
-	MySQLPassword = "ladrillo753"
+	MySQLPassword = "belusql1"
 
 	CacheDuration = 30 * time.Second //tiempo que datos se mantienen en cache 30 segundos
 
-	MemcachedHost = "localhost"
+	MemcachedHost = "memcached"
 	MemcachedPort = "11211"
 
 	JWTKey      = "ThisIsAnExampleJWTKey!"

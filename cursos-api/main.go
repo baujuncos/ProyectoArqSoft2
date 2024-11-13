@@ -5,8 +5,10 @@ import (
 	controllers "cursos-api/controllers"
 	repositories "cursos-api/repositories"
 	services "cursos-api/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 )
 
 func main() {
@@ -15,7 +17,7 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "ladrillo753",
+		Password:   "belusql1",
 		Database:   "cursos-api",
 		Collection: "courses",
 	})
@@ -26,7 +28,7 @@ func main() {
 		Port:      "5672",
 		Username:  "root",
 		Password:  "root",
-		QueueName: "some-rabbit",
+		QueueName: "courses-news",
 	})
 
 	// Services
@@ -37,6 +39,16 @@ func main() {
 
 	// Router
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.GET("/courses", controller.GetCourses)
 	router.POST("/courses", controller.Create)

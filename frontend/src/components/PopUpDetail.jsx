@@ -7,9 +7,11 @@ import {
     ModalCloseButton,
     ModalBody,
     Text,
-    Button } from "@chakra-ui/react";
+    Button
+} from "@chakra-ui/react";
+import Inscribirmebutton from './Inscribirmebutton.jsx';
 
-const PopupDetail = ({ isOpen, onClose, course }) => {
+const PopupDetail = ({ isOpen, onClose, course, formattedDate, getProfesorName }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -17,15 +19,17 @@ const PopupDetail = ({ isOpen, onClose, course }) => {
                 <ModalHeader>Ver detalle</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <Text><strong>Nombre del curso:</strong> {course.name}</Text>
-                    <Text><strong>Descripción:</strong> {course.descripcion}</Text>
-                    <Text><strong>Requisitos:</strong> {course.requisitos}</Text>
-                    <Text><strong>Duración:</strong> {course.duracion}</Text>
+                    <Text py='2' className="card-text">Categoría: {course.categoria}</Text>
+                    <Text className="card-textt">Duracion: {course.duracion}hs</Text>
+                    <Text className="card-textt">Fecha de inicio: {formattedDate}</Text>
+                    <Text className="card-textt">Requisito: Nivel {course.requisitos}</Text>
+                    <Text className="card-textt">Profesor: {getProfesorName(course.profesor_id)}</Text>
                     <Button onClick={onClose}>Cerrar</Button>
+                    <Inscribirmebutton courseId={course.course_id} />
                 </ModalBody>
             </ModalContent>
         </Modal>
     );
 };
 
-export default CourseDetailPopup;
+export default PopupDetail;

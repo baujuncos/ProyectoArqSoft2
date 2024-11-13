@@ -27,7 +27,7 @@ export const Navbar = () => {
   };
 
   const validUserId = typeof userId === 'number' ? userId : parseInt(userId, 10);
-
+  
   return (
       <header>
         <div className='contenedor'>

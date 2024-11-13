@@ -7,28 +7,22 @@ import '../estilos/SearchBar.css'
 const SearchBar = ({ onSearchResults }) => {
     const [searchTerm, setSearchTerm] = React.useState('');
 
-    // Función para construir la URL con parámetros
-    const buildSearchUrl = (baseUrl, searchTerm, limit = 20, offset = 1) => {
-        const params = new URLSearchParams();
-        params.append('limit', limit);
-        params.append('offset', offset);
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        const baseUrl = 'http://localhost:8082/search';
 
+        // Parámetros comunes para ambas solicitudes
+        const params = new URLSearchParams();
+        params.append('limit', '20');
+        params.append('offset', '1');
+
+        // Si el campo de búsqueda no está vacío, agrega el parámetro `q`
         if (searchTerm.trim() !== '') {
-            params.append('q', searchTerm); // Agrega el término de búsqueda si no está vacío
+            params.append('q', searchTerm);
         }
 
-        return `${baseUrl}?${params.toString()}`;
-    };
-
-// Función principal para manejar la búsqueda
-    const handleSearch = async (e) => {
-        e.preventDefault(); // Evita el comportamiento por defecto del formulario
-
-        const baseUrl = 'http://localhost:8082/search';
-        const url = buildSearchUrl(baseUrl, searchTerm); // Construye la URL con los parámetros
-
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${baseUrl}?${params.toString()}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,28 +31,18 @@ const SearchBar = ({ onSearchResults }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                onSearchResults(data); // Envía los resultados a la función de callback
+                onSearchResults(data);
             } else {
-                handleNoResults(); // Maneja el caso de no encontrar resultados
+                alert("No se encontraron cursos.");
+                onSearchResults([]);
             }
         } catch (error) {
-            handleError(error); // Maneja errores de la solicitud
+            console.log('Error al realizar la solicitud al backend:', error);
+            alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
+            onSearchResults([]);
         }
-    };
 
-// Función para manejar la falta de resultados
-    const handleNoResults = () => {
-        alert("No se encontraron cursos.");
-        onSearchResults([]); // Devuelve un arreglo vacío
     };
-
-// Función para manejar errores
-    const handleError = (error) => {
-        console.error('Error al realizar la solicitud al backend:', error);
-        alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
-        onSearchResults([]); // Devuelve un arreglo vacío
-    };
-
 
     return (
         <Box className='search' id='caja'>
