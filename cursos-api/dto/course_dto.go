@@ -15,6 +15,8 @@ type CourseDto struct {
 	Fecha_inicio time.Time `json:"fecha_inicio"`
 }
 
+type CoursesDto []CourseDto
+
 type CourseNew struct {
 	Operation string `json:"operation"`
 	Course_id string `json:"course_id"`
