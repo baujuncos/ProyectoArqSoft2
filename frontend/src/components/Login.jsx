@@ -61,7 +61,7 @@ const Login = ({ onClose }) => {
                     console.log('Respuesta del servidor:', data);
 
                     if (data.id_user) {
-                        Cookies.set('user_id', data.id_user);
+                        Cookies.set('user_id', data.user_id);
                         Cookies.set('email', email);
                         Cookies.set('token', data.token);
                         Cookies.set('admin', data.admin ? "1" : "0");

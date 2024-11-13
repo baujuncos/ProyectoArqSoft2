@@ -17,6 +17,8 @@ export const Navbar = () => {
     if (storedAdmin) {
       setIsAdmin(storedAdmin === "1"); // Convert to boolean
     }
+    console.log(document.cookie);
+
   }, []);
 
   const handleLogout = () => {

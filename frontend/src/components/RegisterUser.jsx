@@ -5,7 +5,7 @@ import '../estilos/RegisterUser.css'
 const RegisterUser = ({ onClose }) => {
     const [nombre, setNombre] = React.useState('');
     const [apellido, setApellido] = React.useState('');
-    const [username, setUsername] = React.useState('');
+    const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [admin, setAdmin] = React.useState(''); // Mantener como string para el dropdown
     const [errorMessage, setErrorMessage] = React.useState('');
@@ -16,15 +16,15 @@ const RegisterUser = ({ onClose }) => {
         e.preventDefault();
 
         console.log('Formulario enviado');
-        console.log('Datos del usuario:', { nombre, apellido, username, password, admin });
+        console.log('Datos del usuario:', { nombre, apellido, email, password, admin });
 
-        if (nombre === '' || apellido === '' || username === '' || password === '' || admin === '') {
+        if (nombre === '' || apellido === '' || email === '' || password === '' || admin === '') {
             setErrorMessage('Todos los campos son obligatorios.');
             return;
         }
 
         const data = {
-            username,
+            email,
             password,
             nombre,
             apellido,
@@ -34,7 +34,7 @@ const RegisterUser = ({ onClose }) => {
         console.log('Enviando datos:', data);
 
         try {
-            const response = await fetch('http://localhost:8080/CreateUser', {
+            const response = await fetch('http://localhost:8080/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const RegisterUser = ({ onClose }) => {
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Correo Electrónico</FormLabel>
-                <Input value={username} onChange={(e) => setUsername(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Contraseña</FormLabel>

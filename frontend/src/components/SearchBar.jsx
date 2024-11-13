@@ -7,35 +7,28 @@ import '../estilos/SearchBar.css'
 const SearchBar = ({ onSearchResults }) => {
     const [searchTerm, setSearchTerm] = React.useState('');
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        if (searchTerm.trim() === '') {
-            // If the search term is empty, fetch all courses
-            try {
-                const response = await fetch(`http://localhost:8080/search`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+    // Función para construir la URL con parámetros
+    const buildSearchUrl = (baseUrl, searchTerm, limit = 20, offset = 1) => {
+        const params = new URLSearchParams();
+        params.append('limit', limit);
+        params.append('offset', offset);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    onSearchResults(data);
-                } else {
-                    alert("No se encontraron cursos.");
-                    onSearchResults([]);
-                }
-            } catch (error) {
-                console.log('Error al realizar la solicitud al backend:', error);
-                alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
-                onSearchResults([]);
-            }
-            return;
+        if (searchTerm.trim() !== '') {
+            params.append('q', searchTerm); // Agrega el término de búsqueda si no está vacío
         }
 
+        return `${baseUrl}?${params.toString()}`;
+    };
+
+// Función principal para manejar la búsqueda
+    const handleSearch = async (e) => {
+        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
+        const baseUrl = 'http://localhost:8082/search';
+        const url = buildSearchUrl(baseUrl, searchTerm); // Construye la URL con los parámetros
+
         try {
-            const response = await fetch(`http://localhost:8080/search/${searchTerm}`, {
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,17 +37,28 @@ const SearchBar = ({ onSearchResults }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                onSearchResults(data);
+                onSearchResults(data); // Envía los resultados a la función de callback
             } else {
-                alert("No se encontraron cursos con ese nombre.");
-                onSearchResults([]);
+                handleNoResults(); // Maneja el caso de no encontrar resultados
             }
         } catch (error) {
-            console.log('Error al realizar la solicitud al backend:', error);
-            alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
-            onSearchResults([]);
+            handleError(error); // Maneja errores de la solicitud
         }
     };
+
+// Función para manejar la falta de resultados
+    const handleNoResults = () => {
+        alert("No se encontraron cursos.");
+        onSearchResults([]); // Devuelve un arreglo vacío
+    };
+
+// Función para manejar errores
+    const handleError = (error) => {
+        console.error('Error al realizar la solicitud al backend:', error);
+        alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
+        onSearchResults([]); // Devuelve un arreglo vacío
+    };
+
 
     return (
         <Box className='search' id='caja'>
