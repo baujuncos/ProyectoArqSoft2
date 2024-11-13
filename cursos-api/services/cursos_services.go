@@ -12,6 +12,7 @@ type Repository interface {
 	Create(ctx context.Context, curso cursosDAO.Course) (string, error)
 	Update(ctx context.Context, curso cursosDAO.Course) error
 	Delete(ctx context.Context, id string) error
+	GetCourses(ctx context.Context) (cursosDAO.Courses, error)
 }
 
 type Queue interface {
@@ -130,4 +131,33 @@ func (service Service) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (service Service) GetCourses(ctx context.Context) (cursosDTO.CoursesDto, error) {
+	// Llamar al metodo GetCourses del repositorio para obtener todos los cursos
+	coursesDAO, err := service.mainRepository.GetCourses(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting courses from repository: %w", err)
+	}
+
+	// Convertir cada curso de DAO a DTO
+	var coursesDto []cursosDTO.CourseDto
+
+	for _, course := range coursesDAO {
+		courseDto := cursosDTO.CourseDto{
+			Course_id:    course.Course_id,
+			Nombre:       course.Nombre,
+			Profesor_id:  course.Profesor_id,
+			Categoria:    course.Categoria,
+			Descripcion:  course.Descripcion,
+			Valoracion:   course.Valoracion,
+			Duracion:     course.Duracion,
+			Requisitos:   course.Requisitos,
+			Url_image:    course.Url_image,
+			Fecha_inicio: course.Fecha_inicio,
+		}
+		coursesDto = append(coursesDto, courseDto)
+	}
+
+	return coursesDto, nil
 }
