@@ -14,6 +14,7 @@ type Service interface {
 	Create(ctx context.Context, course cursosDTO.CourseDto) (string, error)
 	Update(ctx context.Context, course cursosDTO.CourseDto) error
 	Delete(ctx context.Context, id string) error
+	GetCourses(ctx context.Context) (cursosDTO.CoursesDto, error)
 }
 
 type Controller struct {
@@ -61,7 +62,7 @@ func (controller Controller) Create(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Send ID
 	ctx.JSON(http.StatusCreated, gin.H{
 		"id": id,
@@ -114,4 +115,18 @@ func (controller Controller) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": id,
 	})
+}
+
+func (controller Controller) GetCourses(c *gin.Context) {
+	// Llamar al servicio pasando el contexto
+	courses, err := controller.service.GetCourses(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error getting courses: %s", err.Error()),
+		})
+		return
+	}
+
+	// Enviar respuesta
+	c.JSON(http.StatusOK, courses)
 }
