@@ -15,7 +15,7 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "44898366",
+		Password:   "ladrillo753",
 		Database:   "cursos-api",
 		Collection: "courses",
 	})
@@ -38,9 +38,11 @@ func main() {
 	// Router
 	router := gin.Default()
 	router.GET("/courses/:id", controller.GetCourseByID)
+	router.GET("/courses", controller.GetCourses)
 	router.POST("/courses", controller.Create)
 	router.PUT("/courses/:id", controller.Update)
 	router.DELETE("/courses/:id", controller.Delete)
+
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %w", err)
 	}
