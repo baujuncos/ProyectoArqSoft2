@@ -10,7 +10,7 @@ import '../estilos/Course.css';
 import PopupValorar from "./PopUpValorar.jsx"
 import PopupSubirArchivo from "./PopUpArchivo.jsx";
 import PopupSeeReview from "./PopUpSeeReview.jsx";
-import PopupDetail from "./PopupDetail.jsx";
+import PopupDetail from "./PopUpDetail.jsx";
 
 const Item = ({ course, bandera }) => {
     const [userId, setUserId] = useState(null);
@@ -43,11 +43,14 @@ const Item = ({ course, bandera }) => {
 
     useEffect(() => {
         const checkEnrollment = async () => {
-            if (userId) {
+            if (userId && course.course_id) { // Asegúrate de que ambos valores estén definidos
                 try {
-                    const response = await axios.get(`http://localhost:8080/getInscripcionesByUserID/${userId}`);
-                    const inscripciones = response.data;
-                    const enrolled = inscripciones.some(inscripcion => inscripcion.id_course === course.course_id);
+                    // Realiza la solicitud al backend
+                    const response = await axios.get(`http://localhost:8080/inscripciones/usuario/${userId}`);
+                    const inscripciones = response.data; // Esto debería ser un arreglo de IDs (strings)
+
+                    // Verifica si el ID del curso está en el arreglo de inscripciones
+                    const enrolled = inscripciones.includes(course.course_id.toString()); // Convertimos a string para asegurarnos
                     setIsEnrolled(enrolled);
                 } catch (error) {
                     console.error('Error checking enrollment:', error);
@@ -57,6 +60,7 @@ const Item = ({ course, bandera }) => {
 
         checkEnrollment();
     }, [userId, course.course_id]);
+
 
     const getProfesorName = (profesor_id) => {
         const profesores = {
@@ -113,24 +117,19 @@ const Item = ({ course, bandera }) => {
                     {userId && (
                         isAdmin ? (
                             <>
-                                <Button w="40%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleEditCourse}>Editar</Button>
-                                <EliminarButton courseId={course.course_id} />
-                                <Button w="75%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleSeeReview}>Ver review</Button>
+
                             </>
                         ) : (
                             isEnrolled ? (
                                 bandera !== 1 ? (
                                     <>
-                                        <Button w="75%" style={{ fontFamily: 'Spoof Trial, sans-serif', margin: '0 10px' }} onClick={handleValorarCourse}>Valorar</Button>
-                                        <Button w="75%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleSubirArchivo}>Subir archivo</Button>
-                                        <Button w="75%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleSeeReview}>Ver review</Button>
+
                                     </>
                                 ) : null
                             ) : (
                                 bandera !== 1 ? (
                                     <>
-                                    <Inscribirmebutton courseId={course.course_id} />
-                                    <Button w="75%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleSeeReview}>Ver review</Button>
+
                                     </>
                 ) : null
                             )

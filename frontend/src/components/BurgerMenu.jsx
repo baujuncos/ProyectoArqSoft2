@@ -58,35 +58,63 @@ const BurgerMenu = ({ onLogout }) => {
         try {
             const response = await fetch(`http://localhost:8081/courses/${courseId}`);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                if (response.status === 404) {
+                    console.warn(`Curso con ID ${courseId} no encontrado.`);
+                    return null;
+                }
+                throw new Error(`Error del servidor para el curso con ID ${courseId}: ${response.statusText}`);
             }
-            const courseData = await response.json();
-            return courseData;
+            return await response.json();
         } catch (error) {
-            console.error('Error fetching course details:', error);
-            throw error;
+            console.error(`Error al obtener detalles del curso con ID ${courseId}:`, error);
+            return null;
         }
     };
 
     const handleMyCourses = async () => {
         setLoading(true);
+        setError(null);
+
+        if (!userId) {
+            setError('El usuario no está autenticado.');
+            setLoading(false);
+            return;
+        }
+
+        const url = `http://localhost:8080/inscripciones/usuario/${userId}`;
+
         try {
-            const response = await fetch(`http://localhost:8080/GetInscripcionesByUserByID/${userId}`);
+            // Obtén los IDs de los cursos
+            const response = await fetch(url);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`Error del servidor: ${response.statusText}`);
             }
+
             const inscripciones = await response.json();
-            const courseDetailsPromises = inscripciones.map((inscripcion) => fetchCourseDetails(inscripcion.id_course));
+            console.log('IDs de cursos obtenidos:', inscripciones);
+
+            // Llama a `fetchCourseDetails` con los IDs como strings
+            const courseDetailsPromises = inscripciones.map((id) =>
+                fetchCourseDetails(id).catch((error) => {
+                    console.error(`Error al obtener detalles del curso ${id}:`, error);
+                    return null; // Maneja errores individuales
+                })
+            );
+
             const courseDetails = await Promise.all(courseDetailsPromises);
-            setCourses(courseDetails);
-            console.log('Courses with details fetched successfully:', courseDetails);
+            const validCourses = courseDetails.filter((course) => course !== null);
+            setCourses(validCourses);
+            console.log('Detalles de los cursos obtenidos:', validCourses);
+
         } catch (error) {
-            console.error('Error fetching user courses:', error);
-            setError('Error fetching user courses');
+            console.error('Error al obtener los cursos del usuario:', error);
+            setError('No se pudieron obtener los cursos. Intenta nuevamente más tarde.');
         } finally {
             setLoading(false);
         }
     };
+
+
 
     return (
         <Box p={4}>

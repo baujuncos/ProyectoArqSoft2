@@ -24,7 +24,6 @@ const PopupDetail = ({ isOpen, onClose, course, formattedDate, getProfesorName }
                     <Text className="card-textt">Fecha de inicio: {formattedDate}</Text>
                     <Text className="card-textt">Requisito: Nivel {course.requisitos}</Text>
                     <Text className="card-textt">Profesor: {getProfesorName(course.profesor_id)}</Text>
-                    <Button onClick={onClose}>Cerrar</Button>
                     <Inscribirmebutton courseId={course.course_id} />
                 </ModalBody>
             </ModalContent>

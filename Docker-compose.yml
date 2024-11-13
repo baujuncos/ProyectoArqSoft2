@@ -100,6 +100,15 @@ services:
     networks:
       - app-network
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

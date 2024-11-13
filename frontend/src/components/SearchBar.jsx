@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
-import { Input, InputGroup, InputLeftElement, Box, Button } from '@chakra-ui/react';
+import { Input, InputGroup, InputLeftElement, Box } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
-import React from "react";
-import '../estilos/SearchBar.css'
+import React, { useState } from 'react';
+import '../estilos/SearchBar.css';
 
 const SearchBar = ({ onSearchResults }) => {
-    const [searchTerm, setSearchTerm] = React.useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = async (e) => {
         e.preventDefault();
         const baseUrl = 'http://localhost:8082/search';
 
-        // Parámetros comunes para ambas solicitudes
         const params = new URLSearchParams();
         params.append('limit', '20');
         params.append('offset', '1');
 
-        // Si el campo de búsqueda no está vacío, agrega el parámetro `q`
+        // Si el campo de búsqueda no está vacío, agrega el parámetro q
         if (searchTerm.trim() !== '') {
             params.append('q', searchTerm);
         }
@@ -41,7 +40,6 @@ const SearchBar = ({ onSearchResults }) => {
             alert("Error al buscar cursos. Inténtalo de nuevo más tarde.");
             onSearchResults([]);
         }
-
     };
 
     return (
@@ -54,12 +52,11 @@ const SearchBar = ({ onSearchResults }) => {
                     <Input
                         className='input'
                         type="text"
-                        placeholder="Buscar cursos por nombre..."
+                        placeholder="Buscar cursos por nombre, categoría o descripción..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </InputGroup>
-                {/*<Button type="submit" mt={2} width="100%">Buscar</Button>*/}
             </form>
         </Box>
     );
