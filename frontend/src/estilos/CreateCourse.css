@@ -6,10 +6,13 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background-color: white; /* Color de fondo del pop-up */
+    background-color: white;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra del pop-up */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 90vh; /* Evita que el modal se salga de la pantalla */
+    overflow-y: auto; /* Permite scroll si el contenido excede */
 }
+
 
 .inputField {
     margin-top: 1rem;
@@ -34,15 +37,20 @@
 }
 
 button[type="submit"] {
-    background-color: black;
-    color: white;
+    background-color: black !important;
+    color: white !important;
     margin-top: 1rem;
-    transition: background-color 0.3s ease;
+    width: 100%; /* El botón se ajusta al ancho del contenedor */
+    padding: 0.75rem 1rem; /* Añade espacio interno */
+    text-align: center;
+    border: none;
+    cursor: pointer;
     font-family: 'Spoof Trial', sans-serif;
+    transition: background-color 0.3s ease;
 }
 
 button[type="submit"]:hover {
-    background-color: #333;
+    background-color: #333 !important;
 }
 
 .error {
