@@ -17,7 +17,7 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "belusql1",
+		Password:   "ladrillo753",
 		Database:   "cursos-api",
 		Collection: "courses",
 	})

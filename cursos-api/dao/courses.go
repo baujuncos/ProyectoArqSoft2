@@ -11,6 +11,7 @@ type Course struct {
 	Valoracion   float64   `gorm:"valoracion"`
 	Duracion     int       `gorm:"duracion"`
 	Requisitos   string    `gorm:"requisitos"`
+	Capacidad    int       `bson:"capacidad"` //Capacidad máxima del curso
 	Url_image    string    `gorm:"url_image"`
 	Fecha_inicio time.Time `gorm:"fecha_inicio"`
 }

@@ -51,6 +51,7 @@ func (service Service) GetCourseByID(ctx context.Context, id string) (cursosDTO.
 		Valoracion:   courseDAO.Valoracion,
 		Duracion:     courseDAO.Duracion,
 		Requisitos:   courseDAO.Requisitos,
+		Capacidad:    courseDAO.Capacidad,
 		Url_image:    courseDAO.Url_image,
 		Fecha_inicio: courseDAO.Fecha_inicio,
 	}, nil
@@ -66,6 +67,7 @@ func (service Service) Create(ctx context.Context, course cursosDTO.CourseDto) (
 		Valoracion:   course.Valoracion,
 		Duracion:     course.Duracion,
 		Requisitos:   course.Requisitos,
+		Capacidad:    course.Capacidad,
 		Url_image:    course.Url_image,
 		Fecha_inicio: course.Fecha_inicio,
 	}
@@ -94,6 +96,7 @@ func (service Service) Update(ctx context.Context, course cursosDTO.CourseDto) e
 		Valoracion:   course.Valoracion,
 		Duracion:     course.Duracion,
 		Requisitos:   course.Requisitos,
+		Capacidad:    course.Capacidad,
 		Url_image:    course.Url_image,
 		Fecha_inicio: course.Fecha_inicio,
 	}
@@ -153,6 +156,7 @@ func (service Service) GetCourses(ctx context.Context) (cursosDTO.CoursesDto, er
 			Valoracion:   course.Valoracion,
 			Duracion:     course.Duracion,
 			Requisitos:   course.Requisitos,
+			Capacidad:    course.Capacidad,
 			Url_image:    course.Url_image,
 			Fecha_inicio: course.Fecha_inicio,
 		}

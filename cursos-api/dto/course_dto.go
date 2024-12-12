@@ -11,6 +11,7 @@ type CourseDto struct {
 	Valoracion   float64   `json:"valoracion"`
 	Duracion     int       `json:"duracion"`
 	Requisitos   string    `json:"requisitos"`
+	Capacidad    int       `json:"capacidad"` // Capacidad máxima
 	Url_image    string    `json:"url_image"`
 	Fecha_inicio time.Time `json:"fecha_inicio"`
 }

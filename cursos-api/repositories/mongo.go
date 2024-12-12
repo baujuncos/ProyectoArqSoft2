@@ -122,6 +122,9 @@ func (repository Mongo) Update(ctx context.Context, course coursesDAO.Course) er
 	if course.Url_image != "" {
 		update["url_image"] = course.Url_image
 	}
+	if course.Capacidad != 0 {
+		update["capacidad"] = course.Capacidad
+	}
 
 	// Update the document in MongoDB
 	if len(update) == 0 {
