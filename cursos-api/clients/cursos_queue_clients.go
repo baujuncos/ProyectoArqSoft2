@@ -25,7 +25,7 @@ type Rabbit struct {
 func NewRabbit(config RabbitConfig) Rabbit {
 	connection, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", config.Username, config.Password, config.Host, config.Port))
 	if err != nil {
-		log.Fatalf("error getting Rabbit connection: %w", err)
+		log.Fatalf("error getting Rabbit connection: %s", err)
 	}
 	channel, err := connection.Channel()
 	if err != nil {

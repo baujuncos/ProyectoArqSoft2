@@ -8,6 +8,6 @@ func NewMock() Mock {
 	return Mock{}
 }
 
-func (Mock) Publish(cursesNew dto.CourseNew) error {
+func (Mock) Publish(coursesNew dto.CourseNew) error {
 	return nil
 }
