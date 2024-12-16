@@ -12,6 +12,7 @@ const CreateCourse = ({ onClose }) => {
     const [duracion, setDuracion] = React.useState('');
     const [valoracion, setValoracion] = React.useState('');
     const [requisitos, setRequisitos] = React.useState('');
+    const [capacidad, setCapacidad] = React.useState('');
     const [url_image, setUrl_image] = React.useState('');
     const [fecha_inicio, setFecha_inicio] = React.useState('');
     const [errorMessage, setErrorMessage] = React.useState('');
@@ -28,12 +29,13 @@ const CreateCourse = ({ onClose }) => {
             duracion,
             valoracion,
             requisitos,
+            capacidad,
             url_image,
             fecha_inicio
         });
 
         // Validación básica
-        if (!nombre || !categoria || !descripcion || !duracion || !valoracion || !requisitos || !url_image || !fecha_inicio) {
+        if (!nombre || !categoria || !descripcion || !duracion || !valoracion || !requisitos || !capacidad || !url_image || !fecha_inicio) {
             setErrorMessage('Todos los campos son obligatorios.');
             return;
         }
@@ -47,6 +49,7 @@ const CreateCourse = ({ onClose }) => {
             duracion: parseInt(duracion, 10), // Convertir a número
             valoracion: parseFloat(valoracion), // Convertir a número decimal
             requisitos,
+            capacidad: parseInt(capacidad, 10),
             url_image,
             fecha_inicio: new Date(fecha_inicio).toISOString(), // Convertir fecha a ISO 8601
         };
@@ -84,27 +87,27 @@ const CreateCourse = ({ onClose }) => {
         <form id="formCreateCourse" onSubmit={handleSubmit}>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Nombre del curso</FormLabel>
-                <Input value={nombre} onChange={(e) => setNombre(e.target.value)}
+                <Input id="input" value={nombre} onChange={(e) => setNombre(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Categoría</FormLabel>
-                <Input value={categoria} onChange={(e) => setCategoria(e.target.value)}
+                <Input id="input" value={categoria} onChange={(e) => setCategoria(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Descripción</FormLabel>
-                <Input value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
+                <Input id="input" value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Duración</FormLabel>
-                <Input value={duracion} onChange={(e) => setDuracion(e.target.value)}
+                <Input id="input" value={duracion} onChange={(e) => setDuracion(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Valoracion</FormLabel>
-                <Select value={valoracion} onChange={(e) => setValoracion(e.target.value)}
+                <Select id="inputValoracion" value={valoracion} onChange={(e) => setValoracion(e.target.value)}
                         style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}>
                     <option value=""
                             style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}>seleccione la
@@ -129,17 +132,22 @@ const CreateCourse = ({ onClose }) => {
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Requisitos</FormLabel>
-                <Input value={requisitos} onChange={(e) => setRequisitos(e.target.value)}
+                <Input id="input" value={requisitos} onChange={(e) => setRequisitos(e.target.value)}
+                       style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
+            </FormControl>
+            <FormControl>
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Capacidad</FormLabel>
+                <Input id="input" value={capacidad} onChange={(e) => setCapacidad(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>URL de la imagen</FormLabel>
-                <Input value={url_image} onChange={(e) => setUrl_image(e.target.value)}
+                <Input id="input" value={url_image} onChange={(e) => setUrl_image(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Fecha de inicio</FormLabel>
-                <Input type="date" value={fecha_inicio} onChange={(e) => setFecha_inicio(e.target.value)}
+                <Input id="input" type="date" value={fecha_inicio} onChange={(e) => setFecha_inicio(e.target.value)}
                        style={{border: '2px solid black', fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             {errorMessage && <p style={{fontFamily: 'Spoof Trial, sans-serif'}}>{errorMessage}</p>}

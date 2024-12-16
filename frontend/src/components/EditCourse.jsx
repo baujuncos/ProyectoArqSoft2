@@ -86,34 +86,34 @@ const EditCourse = ({ courseId, onClose }) => {
     return (
         <form onSubmit={handleSubmit}>
             <FormControl>
-                <FormLabel>Nombre</FormLabel>
-                <Input name="nombre" value={courseData.nombre} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Nombre</FormLabel>
+                <Input name="nombre" value={courseData.nombre} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>Categoría</FormLabel>
-                <Input name="categoria" value={courseData.categoria} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Categoría</FormLabel>
+                <Input name="categoria" value={courseData.categoria} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>Descripción</FormLabel>
-                <Input name="descripcion" value={courseData.descripcion} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Descripción</FormLabel>
+                <Input name="descripcion" value={courseData.descripcion} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>Duración</FormLabel>
-                <Input name="duracion" value={courseData.duracion} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Duración</FormLabel>
+                <Input name="duracion" value={courseData.duracion} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>Requisitos</FormLabel>
-                <Input name="requisitos" value={courseData.requisitos} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Requisitos</FormLabel>
+                <Input name="requisitos" value={courseData.requisitos} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>URL de la imagen</FormLabel>
-                <Input name="url_image" value={courseData.url_image} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>URL de la imagen</FormLabel>
+                <Input name="url_image" value={courseData.url_image} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
-                <FormLabel>Fecha de inicio</FormLabel>
-                <Input type="date" name="fecha_inicio" value={courseData.fecha_inicio} onChange={handleChange} />
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Fecha de inicio</FormLabel>
+                <Input type="date" name="fecha_inicio" value={courseData.fecha_inicio} onChange={handleChange} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
-            <Button mt="4" colorScheme="blue" type="submit">
+            <Button type="submit">
                 Guardar cambios
             </Button>
         </form>

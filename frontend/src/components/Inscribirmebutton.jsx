@@ -52,11 +52,27 @@ const Inscribirmebutton = ({ courseId, fechaInicioCurso }) => {
 
       if (response.ok) {
         alert("Inscripción exitosa! :)");
-        window.location.reload();  // Alternativa: utiliza un estado o redirección sin recarga
-      } else if (response.status === 500) {
-        alert("Ya estás inscrito en este curso");
+        window.location.reload();
       } else {
-        alert("Ya estás inscrito en este curso.");
+        // Intentar leer el cuerpo de la respuesta como JSON
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          console.error("La respuesta del servidor no contiene un JSON válido.");
+        }
+
+        // Manejar el mensaje de error si existe
+        if (errorData && errorData.error) {
+          if (errorData.error.includes("course is full")) {
+            alert("El curso no tiene cupos disponibles.");
+          } else {
+            alert("Ya estás inscrito en este curso.");
+          }
+        } else {
+          // Mensaje por defecto si no hay detalles en el JSON
+          alert("Ya estás inscrito o el curso no tiene cupos disponibles.");
+        }
       }
     } catch (error) {
       console.log('Error al realizar la solicitud al backend:', error);

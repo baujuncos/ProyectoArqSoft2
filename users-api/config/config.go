@@ -7,7 +7,7 @@ const (
 	MySQLPort     = "3306"
 	MySQLDatabase = "users_api"
 	MySQLUsername = "root"
-	MySQLPassword = "ladrillo753"
+	MySQLPassword = "belusql1"
 
 	CacheDuration = 30 * time.Second //tiempo que datos se mantienen en cache 30 segundos
 
