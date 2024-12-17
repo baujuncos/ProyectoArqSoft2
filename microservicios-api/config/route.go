@@ -23,8 +23,8 @@ func init() {
 	// Configuración de CORS
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET"},
-		AllowHeaders:     []string{"Content-Type"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"}, // Agregar 'Authorization'
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))

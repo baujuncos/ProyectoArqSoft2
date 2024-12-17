@@ -18,19 +18,19 @@ import Popup from "./PopUp.jsx";
 import PopupCreate from "./PopUpCreate.jsx";
 import PopupRegister from "./PopUpRegister.jsx";
 import ItemList from './ItemList';
-
+import PopUpMicroservicios from "./PopUpMicroservicios.jsx";
 
 const BurgerMenu = ({ onLogout }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isPopupOpen, onOpen: onOpenPopup, onClose: onClosePopup } = useDisclosure();
     const { isOpen: isPopupOpenCreate, onOpen: onOpenPopupCreate, onClose: onClosePopupCreate } = useDisclosure();
     const { isOpen: isPopupOpenRegister, onOpen: onOpenPopupRegister, onClose: onClosePopupRegister } = useDisclosure();
+    const { isOpen: isPopupOpenMicroservicios, onOpen: onOpenPopupMicroservicios, onClose: onClosePopupMicroservicios } = useDisclosure();
     const [userId, setUserId] = useState(null);
     const [admin, setAdmin] = useState(null);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
 
     useEffect(() => {
         const storedUserId = Cookies.get('user_id');
@@ -84,27 +84,22 @@ const BurgerMenu = ({ onLogout }) => {
         const url = `http://localhost:8080/inscripciones/usuario/${userId}`;
 
         try {
-            // Obtén los IDs de los cursos
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Error del servidor: ${response.statusText}`);
             }
 
             const inscripciones = await response.json();
-            console.log('IDs de cursos obtenidos:', inscripciones);
-
-            // Llama a `fetchCourseDetails` con los IDs como strings
             const courseDetailsPromises = inscripciones.map((id) =>
                 fetchCourseDetails(id).catch((error) => {
                     console.error(`Error al obtener detalles del curso ${id}:`, error);
-                    return null; // Maneja errores individuales
+                    return null;
                 })
             );
 
             const courseDetails = await Promise.all(courseDetailsPromises);
             const validCourses = courseDetails.filter((course) => course !== null);
             setCourses(validCourses);
-            console.log('Detalles de los cursos obtenidos:', validCourses);
 
         } catch (error) {
             console.error('Error al obtener los cursos del usuario:', error);
@@ -113,8 +108,6 @@ const BurgerMenu = ({ onLogout }) => {
             setLoading(false);
         }
     };
-
-
 
     return (
         <Box p={4}>
@@ -128,14 +121,17 @@ const BurgerMenu = ({ onLogout }) => {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader style={{fontFamily: 'Spoof Trial, sans-serif'}}>Menú</DrawerHeader>
+                    <DrawerHeader style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Menú</DrawerHeader>
                     <DrawerBody>
                         <VStack spacing={4}>
                             {userId ? (
                                 <>
                                     <Button w="100%" onClick={handleLogout} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Cerrar sesión</Button>
                                     {admin ? (
-                                        <Button w="100%" onClick={onOpenPopupCreate} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Crear curso</Button>
+                                        <>
+                                            <Button w="100%" onClick={onOpenPopupCreate} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Crear curso</Button>
+                                            <Button w="100%" onClick={onOpenPopupMicroservicios} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Gestión de Microservicios</Button>
+                                        </>
                                     ) : (
                                         <>
                                             <Button w="100%" onClick={handleMyCourses} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Mis cursos</Button>
@@ -159,9 +155,10 @@ const BurgerMenu = ({ onLogout }) => {
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
-            <Popup isOpen={isPopupOpen} onClose={onClosePopup}/>
+            <Popup isOpen={isPopupOpen} onClose={onClosePopup} />
             <PopupCreate isOpen={isPopupOpenCreate} onClose={onClosePopupCreate} />
             <PopupRegister isOpen={isPopupOpenRegister} onClose={onClosePopupRegister} />
+            <PopUpMicroservicios isOpen={isPopupOpenMicroservicios} onClose={onClosePopupMicroservicios} />
         </Box>
     );
 };
