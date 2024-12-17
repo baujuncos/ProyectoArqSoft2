@@ -7,9 +7,9 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ladrillo753
+      MYSQL_ROOT_PASSWORD: belusql1
       MYSQL_DATABASE: users_api
-      MYSQL_PASSWORD: ladrillo753
+      MYSQL_PASSWORD: belusql1
     networks:
       - app-network
 
@@ -28,7 +28,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: ladrillo753
+      MONGO_INITDB_ROOT_PASSWORD: belusql1
     networks:
       - app-network
 
