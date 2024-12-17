@@ -7,9 +7,9 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: belusql1
+      MYSQL_ROOT_PASSWORD: ladrillo753
       MYSQL_DATABASE: users_api
-      MYSQL_PASSWORD: belusql1
+      MYSQL_PASSWORD: ladrillo753
     networks:
       - app-network
 
@@ -28,7 +28,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: belusql1
+      MONGO_INITDB_ROOT_PASSWORD: ladrillo753
     networks:
       - app-network
 
@@ -97,6 +97,18 @@ services:
     depends_on:
       - memcached
       - mysql
+    networks:
+      - app-network
+
+  cursos-nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./cursos-api/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - cursos-api
     networks:
       - app-network
 
